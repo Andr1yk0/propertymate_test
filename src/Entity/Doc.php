@@ -17,13 +17,12 @@ class Doc
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Contact")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="App\Entity\Contact", inversedBy="docs")
      */
-    private $contact_id;
+    private $contact;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $number;
 
@@ -42,19 +41,25 @@ class Doc
      */
     private $delete_at;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Contact", mappedBy="contact")
+     */
+    private $contacts;
+
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getContractId(): ?Contact
+    public function getContact(): ?Contact
     {
-        return $this->contract_id;
+        return $this->contact;
     }
 
-    public function setContractId(?Contact $contract_id): self
+    public function setContact(?Contact $contact): self
     {
-        $this->contract_id = $contract_id;
+        $this->contact = $contact;
 
         return $this;
     }

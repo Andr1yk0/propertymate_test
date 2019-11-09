@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Contact;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\DBAL\FetchMode;
 
 /**
  * @method Contact|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,6 +19,26 @@ class ContactRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Contact::class);
     }
+
+    public function getAllWithLatestDoc()
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $stmt = $conn->prepare(
+            "select distinct on (c.id)
+       c.id                           contact_id,
+       concat(c.surname, ' ', c.name) full_name,
+       d.id                           doc_id,
+       d.number                       doc_number,
+       d.create_at                    doc_create_at
+    from contact c
+         left join doc d on d.contact_id = c.id and d.delete_at is null
+    where c.delete_at is null
+    order by c.id, d.create_at desc"
+        );
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
 
     // /**
     //  * @return Contract[] Returns an array of Contract objects
