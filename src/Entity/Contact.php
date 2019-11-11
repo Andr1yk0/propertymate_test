@@ -27,6 +27,11 @@ class Contact
     private $surname;
 
     /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $customFields;
+
+    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $create_at;
@@ -56,6 +61,18 @@ class Contact
         $this->name = $name;
 
         return $this;
+    }
+
+    public function setCustomFields(array $fields): self
+    {
+        $this->customFields = $fields;
+
+        return  $this;
+    }
+
+    public function getCustomFields()
+    {
+        return $this->customFields;
     }
 
     public function getSurname(): ?string

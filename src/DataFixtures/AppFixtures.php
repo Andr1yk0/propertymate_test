@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Contact;
+use App\Entity\CustomField;
 use App\Entity\Doc;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -22,6 +23,9 @@ class AppFixtures extends Fixture
             $contact = new Contact();
             $contact->setName("Name$i");
             $contact->setSurname("Surname$i");
+            $contact->setCustomFields(['address' => "address $i"]);
+            $date = clone $this->baseDateTime;
+            $contact->setCreateAt($date->sub(new \DateInterval("P{$i}D")));
             if ($i % 2 === 0) {
                 $contact->setDeleteAt($this->baseDateTime);
             }
@@ -29,6 +33,7 @@ class AppFixtures extends Fixture
             $manager->persist($contact);
             $this->createDocs($contact, $manager);
         }
+        $this->createCustomFields($manager);
 
         $manager->flush();
     }
@@ -48,6 +53,15 @@ class AppFixtures extends Fixture
             $manager->persist($doc);
         }
 
+    }
+
+    protected function createCustomFields(ObjectManager $manager)
+    {
+        $field = new CustomField();
+        $field->setType('text');
+        $field->setName('address');
+        $field->setDefaultValue('');
+        $manager->persist($field);
     }
 
 }
